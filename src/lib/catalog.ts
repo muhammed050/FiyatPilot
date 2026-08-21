@@ -19,9 +19,26 @@ type DbProduct = {
   category?: { name?: string; slug?: string } | null;
 };
 
+type CatalogFacet = { name: string; slug: string };
+
 function firstImage(images: unknown): string | undefined {
   if (Array.isArray(images)) return typeof images[0] === 'string' ? images[0] : undefined;
   return undefined;
+}
+
+function toSlug(value: string): string {
+  return value
+    .toLocaleLowerCase('tr-TR')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/ı/g, 'i')
+    .replace(/ğ/g, 'g')
+    .replace(/ü/g, 'u')
+    .replace(/ş/g, 's')
+    .replace(/ö/g, 'o')
+    .replace(/ç/g, 'c')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
 
 function toProduct(row: DbProduct): Product {
@@ -71,10 +88,21 @@ export async function getCatalogSlugs() {
   return all.map(({ slug }) => slug);
 }
 
-export async function getCatalogFacets() {
+export async function getCatalogFacets(): Promise<{ categories: CatalogFacet[]; brands: CatalogFacet[] }> {
   const all = await getProducts();
+
+  const categoryMap = new Map<string, CatalogFacet>();
+  const brandMap = new Map<string, CatalogFacet>();
+
+  for (const product of all) {
+    const category = { name: product.category, slug: toSlug(product.category) };
+    const brand = { name: product.brand, slug: toSlug(product.brand) };
+    categoryMap.set(category.slug, category);
+    brandMap.set(brand.slug, brand);
+  }
+
   return {
-    categories: [...new Set(all.map((p) => ({ name: p.category, slug: p.category.toLowerCase().replace(/\s+/g, '-') })).map(JSON.stringify))].map(JSON.parse) as { name: string; slug: string }[],
-    brands: [...new Set(all.map((p) => ({ name: p.brand, slug: p.brand.toLowerCase().replace(/\s+/g, '-') })).map(JSON.stringify))].map(JSON.parse) as { name: string; slug: string }[],
+    categories: Array.from(categoryMap.values()),
+    brands: Array.from(brandMap.values()),
   };
 }
