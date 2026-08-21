@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit"
@@ -19,7 +19,7 @@
     "next-themes": "latest",
     "react": "19.2.0",
     "react-dom": "19.2.0",
-    "recharts": "latest",
+    "next-themes": "latest",
     "tailwind-merge": "latest",
     "zod": "latest"
   },
