@@ -1,0 +1,4 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { createHash } from 'crypto';
+import { products } from '@/lib/products';
+export async function GET(req:NextRequest,{params}:{params:Promise<{slug:string;merchant:string}>}){const {slug,merchant}=await params;const p=products.find(x=>x.slug===slug);if(!p)return NextResponse.json({error:'Product not found'},{status:404});const clickId=createHash('sha256').update(`${slug}:${merchant}:${Date.now()}:${req.headers.get('user-agent')||''}`).digest('hex').slice(0,24);const target=process.env[`AFFILIATE_${merchant.toUpperCase().replaceAll('-','_')}_URL`];if(!target)return NextResponse.json({error:'Affiliate offer is not configured',clickId},{status:503});const url=new URL(target);url.searchParams.set('subid',clickId);return NextResponse.redirect(url)}
