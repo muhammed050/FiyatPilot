@@ -1,0 +1,3 @@
+import { MetadataRoute } from 'next';
+import { products } from '@/lib/products';
+export default function sitemap():MetadataRoute.Sitemap{const base=process.env.NEXT_PUBLIC_SITE_URL||'https://fiyatpilot.com';return [{url:base,changeFrequency:'daily',priority:1},{url:`${base}/firsatlar`,changeFrequency:'hourly',priority:.9},{url:`${base}/karsilastir`,changeFrequency:'daily',priority:.8},{url:`${base}/laptop`,changeFrequency:'daily',priority:.9},{url:`${base}/rehber`,changeFrequency:'weekly',priority:.7},...products.map(p=>({url:`${base}/urun/${p.slug}`,lastModified:new Date(),changeFrequency:'daily' as const,priority:.8}))]}
