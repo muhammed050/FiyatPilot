@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
   --bg: #f6f8fb;
@@ -27,6 +25,7 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+html, body { min-height: 100%; }
 body {
   margin: 0;
   background: var(--bg);
@@ -34,11 +33,17 @@ body {
   font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
+
 a { text-decoration: none; color: inherit; }
 button, input, select, textarea { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 :focus-visible { outline: 3px solid rgba(20, 87, 217, .22); outline-offset: 3px; }
+
+/* Global media safety: images can never escape their layout container. */
+img, svg, video, canvas { max-width: 100%; }
+img { display: block; height: auto; }
 
 .container { width: min(1240px, calc(100% - 32px)); margin-inline: auto; }
 .surface { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
@@ -55,7 +60,15 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .price { font-variant-numeric: tabular-nums; letter-spacing: -.025em; }
 .grid-auto { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
 
+/* Prevent common product-card image regressions on every route. */
+.grid-auto article { min-width: 0; overflow: hidden; }
+.grid-auto img { max-width: 100%; }
+
 ::selection { background: rgba(20, 87, 217, .14); }
+
+@media (max-width: 900px) {
+  .container { width: min(100% - 28px, 1240px); }
+}
 
 @media (max-width: 640px) {
   .container { width: min(100% - 24px, 1240px); }
